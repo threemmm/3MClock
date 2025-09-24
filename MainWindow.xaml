@@ -1,0 +1,151 @@
+<Window x:Class="ThreeMClock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="3M Clock"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        SizeToContent="WidthAndHeight"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        WindowStartupLocation="CenterScreen"
+        Loaded="MainWindow_Loaded">
+    <Grid>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Settings" Click="SettingsMenuItem_Click"/>
+                <MenuItem Header="Exit" Click="Exit_Click"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <Grid x:Name="ClockRoot">
+            <Border x:Name="BgBorder" 
+                    CornerRadius="8" 
+                    Visibility="Collapsed" />
+            <TextBlock x:Name="ClockTextContainer" 
+                       FontFamily="Segoe UI Variable Display" 
+                       FontWeight="SemiBold"
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       LineStackingStrategy="BlockLineHeight"
+                       TextAlignment="Center">
+                <TextBlock.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="4" Color="Black" Opacity="0.7"/>
+                </TextBlock.Effect>
+                <Run x:Name="TimeTextRun" Text="0:00"/><Run x:Name="AmPmTextRun" Text=" PM" BaselineAlignment="Baseline"/>
+            </TextBlock>
+        </Grid>
+
+        <Popup x:Name="SettingsPopup"
+               Placement="Bottom"
+               StaysOpen="False"
+               AllowsTransparency="True"
+               VerticalOffset="10">
+            <Border Padding="12" CornerRadius="8" Background="#F1F1F1" BorderBrush="#BDBDBD" BorderThickness="1" MinWidth="280">
+                <Border.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#E0E0E0"/>
+                        <Setter Property="BorderBrush" Value="#ADADAD"/>
+                        <Setter Property="Foreground" Value="#333333"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Padding" Value="8,4"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#EAEAEA"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="#D0D0D0"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Border.Resources>
+                <Border.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="6" Color="#AAA" Opacity="0.5"/>
+                </Border.Effect>
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                        <TextBlock Text="Settings" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                        <Button Content="&#x2715;" Click="CloseSettings_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Width="24" Height="24" FontFamily="Arial" ToolTip="Close" Padding="0"/>
+                    </Grid>
+
+                    <TextBlock Text="Window Behavior" Margin="0,4,0,2"/>
+                    <ComboBox x:Name="TopMostComboBox" SelectionChanged="TopMostComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Normal"/>
+                        <ComboBoxItem Content="Always on Top"/>
+                        <ComboBoxItem Content="Above Taskbar"/>
+                    </ComboBox>
+
+                    <CheckBox x:Name="Use24HourCheck" Content="Use 24-hour format" Margin="0,8,0,4" Checked="Setting_Changed" Unchecked="Setting_Changed"/>
+
+                    <DockPanel Margin="0,8,0,4">
+                        <CheckBox x:Name="BackgroundCheck" Content="Background" VerticalAlignment="Center" Checked="Setting_Changed" Unchecked="Setting_Changed"/>
+                        <Button x:Name="BackgroundColorButton" Content="Color..." Margin="8,0,0,0" HorizontalAlignment="Right" Click="BackgroundColorButton_Click"/>
+                    </DockPanel>
+
+                    <Button x:Name="FontColorButton" Content="Font Color..." Margin="0,4,0,8" HorizontalAlignment="Left" Click="FontColorButton_Click"/>
+
+                    <TextBlock Text="Font" Margin="0,8,0,2"/>
+                    <ComboBox x:Name="FontComboBox" SelectionChanged="FontComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Segoe UI Variable Display"/>
+                        <ComboBoxItem Content="Bahnschrift"/>
+                        <ComboBoxItem Content="Consolas"/>
+                        <ComboBoxItem Content="Courier New"/>
+                        <ComboBoxItem Content="Verdana"/>
+                        <ComboBoxItem Content="Impact"/>
+                        <ComboBoxItem Content="OCR A Extended"/>
+                    </ComboBox>
+
+                    <TextBlock Text="Text Effect" Margin="0,8,0,2"/>
+                    <ComboBox x:Name="TextEffectComboBox" SelectionChanged="TextEffectComboBox_SelectionChanged">
+                        <ComboBoxItem Content="Shadow"/>
+                        <ComboBoxItem Content="Glow"/>
+                        <ComboBoxItem Content="None"/>
+                    </ComboBox>
+
+                    <TextBlock Text="Opacity" Margin="0,8,0,2"/>
+                    <Slider x:Name="OpacitySlider" Minimum="0.1" Maximum="1.0" ValueChanged="OpacitySlider_ValueChanged" IsMoveToPointEnabled="True"/>
+
+                    <TextBlock Text="Size" Margin="0,8,0,2"/>
+                    <Slider x:Name="SizeSlider" Minimum="12" Maximum="144" ValueChanged="SizeSlider_ValueChanged" IsMoveToPointEnabled="True"/>
+
+                    <TextBlock Text="Background Padding (Width)" Margin="0,8,0,2"/>
+                    <Slider x:Name="BackgroundPaddingXSlider" Minimum="0" Maximum="100" ValueChanged="BackgroundPaddingXSlider_ValueChanged" IsMoveToPointEnabled="True"/>
+
+                    <TextBlock Text="Background Padding (Height)" Margin="0,8,0,2"/>
+                    <Slider x:Name="BackgroundPaddingYSlider" Minimum="0" Maximum="100" ValueChanged="BackgroundPaddingYSlider_ValueChanged" IsMoveToPointEnabled="True"/>
+
+                    <Separator Margin="0,12"/>
+
+                    <Grid>
+                        <TextBlock FontSize="11" Foreground="#555" HorizontalAlignment="Left">
+                            <Run Text="by threemmm"/>
+                            <LineBreak/>
+                            <Hyperlink NavigateUri="https://github.com/threemmm" RequestNavigate="Hyperlink_RequestNavigate">github.com/threemmm</Hyperlink>
+                        </TextBlock>
+                        <TextBlock x:Name="VersionText" FontSize="11" Foreground="#555" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button Content="Reset" Click="ResetButton_Click" Margin="0,0,8,0"/>
+                        <Button Content="Exit" Click="Exit_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</Window>
+
+
